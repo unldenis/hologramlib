@@ -1,11 +1,407 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HologramLib</title>
-</head>
-<body>
-    Documentation
-</body>
+<html lang="en" data-theme="dark">
+    <head>
+        <title>HologramLib documentation</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+        <link rel="stylesheet" href="css/ace.min.css">
+        
+        <style type="text/css" media="screen">
+            .code {
+                width: 100%;
+                white-space: pre-wrap;
+                border: solid lightgrey 1px;
+            }
+
+    
+        </style>
+    </head>
+    
+    <body class="container">
+        <script src="src-min/ace.js"></script>
+
+        <!-- load ace static highlight extension -->
+        <script src="src-min/ext-static_highlight.js"></script>
+
+
+        <!-- Minimal theme switcher -->
+        <script src="js/minimal-theme-switcher.js"></script>
+
+        <script>
+            const setTheme = (color) => {
+                document.querySelector("html").setAttribute("data-theme", color);
+            };
+        </script>
+
+<nav>
+    <ul>
+        <details role="list">
+            <summary aria-haspopup="listbox" role="link">Theme</summary>
+            <ul role="listbox">
+                <li onclick="setTheme('light')"><a>Light</a></li>
+                <li onclick="setTheme('dark')"><a>Dark</a></li>
+            </ul>
+        </details>
+    </ul>
+    <ul>
+      <li><strong>HologramLib</strong></li>
+    </ul>
+    <ul>
+      <li><a href="https://github.com/unldenis/hologram-lib" style="width: 3em;"><img src="github-mark.png" alt="github"></a></li>
+    </ul>
+  </nav>
+<hgroup>
+    <h2>HologramLib</h2>
+    <p> Asynchronous, high-performance Minecraft Hologram library for 1.8-1.20.1 servers.
+    <br>
+    This library can only be used on spigot servers higher or on version 1.8.8. 
+        The plugin <strong>ProtocolLib</strong> is required on your server.</p>
+    <p>enjoy</p>
+</hgroup>
+       
+
+
+
+
+<h3>How to use</h3>
+
+<details>
+    <summary>Maven</summary>
+    <div class="code" ace-mode="ace/mode/xml">
+&lt;repository&gt;
+    &lt;id&gt;jitpack.io&lt;/id&gt;
+    &lt;url&gt;https://jitpack.io&lt;/url&gt;
+&lt;/repository&gt;
+
+&lt;dependency&gt;
+    &lt;groupId&gt;com.github.unldenis&lt;/groupId&gt;
+    &lt;artifactId&gt;Hologram-Lib&lt;/artifactId&gt;
+    &lt;version&gt;2.5.0&lt;/version&gt;
+&lt;/dependency&gt;
+    </div>
+</details>
+
+
+
+
+
+<details>
+    <summary>Gradle</summary>
+    <div class="code" ace-mode="ace/mode/xml">
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+    implementation 'com.github.unldenis:Hologram-Lib:master-SNAPSHOT'
+}
+
+    </div>
+</details>
+
+
+<h3>Requirements</h3>
+<section>   
+<p>Add ProtocolLib as dependency to your plugin.yml. It could look like this:</p>
+<div class="code" ace-mode="ace/mode/yaml" style="width: 30em;">
+name: Hub
+version: 1.0-SNAPSHOT
+api-version: "1.13"
+depend: [ProtocolLib]
+author: unldenis
+</div>
+</section>
+
+
+<h3>Line solutions in HologramLib</h3>
+<div>
+<p>These are the lines provided by the library, thanks to the composition of various parts. The library is structured so that you too can create your own custom hologram.
+To be integrated into a Hologram composed of multiple lines you need to implement ILine.</p>
+<figure><table role="grid">
+    <thead><tr><th scope="col">#</th><th scope="col">Animation</th><th scope="col">Hologram Integration</th><th scope="col">Clickable</th></tr></thead>
+    <tbody>
+        <tr>
+            <th scope="row">Line</th><td></td><td></td><td></td></tr>
+            <tr><th scope="row">TextLine</th><td></td><td>✅</td><td>✅(w/ Pool)</td></tr>
+            <tr><th scope="row">TextALine</th><td>✅</td><td>✅</td><td></td></tr>
+            <tr><th scope="row">ClickableTextLine</th><td></td><td>✅</td><td>✅</td></tr>
+            <tr><th scope="row">ItemLine</th><td></td><td>✅</td><td></td></tr>
+            <tr><th scope="row">ItemALine</th><td>✅</td><td>✅</td><td></td></tr>
+    </tbody>
+</table></figure>
+</div>
+
+
+<h3>Lets started</h3>
+
+<section>
+    <h5></h5>
+    <p>
+        The library has been designed in such a way that it can be useful in any situation. What does it mean? 
+        <br>
+        That you can choose to show a hologram to a single player for a few seconds or 
+        for example use pools that automatically manage holograms and show them to players only if at least in a certain radius from them.
+    </p>
+    <p>
+
+        So the library uses the following concepts: 
+        <ul>
+    
+            <li>
+                A <mark>Line</mark> itself is a hologram. The library through composition creates different types. 
+            </li>
+            <li>
+                 A set of lines are used to create <mark>holograms</mark>. Holograms can also consist of a single line. You have to show holograms manually for each player. 
+            </li>
+            <li>
+                <mark>Pools</mark> are a set of holograms. Pools are not just containers. in fact they take care of showing and hiding holograms (not lines) to the different players in the server. 
+                This allows for greater efficiency as holograms are shown for example only within a range for each player.
+            </li>
+            
+    </p>
+    
+</section>
+
+<section>
+    <h5>Choose what you need</h5>
+    <div class="grid">
+        <article>
+            <a href="#(Pool &) Hologram Builder">
+                <hgroup>
+                    <h3>(Pool &) Hologram Builder</h3>
+                    <h4>Embrace coding effortlessly!</h4>
+                </hgroup>
+            </a>
+        </article>
+
+        <article>
+            <a href="#Pool & Holograms & Lines">
+                <hgroup>
+                    <h3>Pool & Holograms & Lines</h3>
+                    <h4>Unlock your coding potential with ease!</h4>
+                </hgroup>
+            </a>
+        </article>
+        <article>
+            <a href="#Hologram & Lines">
+                <hgroup>
+                    <h3>Hologram & Lines</h3>
+                    <h4>Embrace a gentle challenge!</h4>
+                </hgroup>
+            </a>
+        </article>
+
+        <article>
+            <a href="#Lines">
+                <hgroup>
+                    <h3>Lines</h3>
+                    <h4>For the daring, conquer the heights of complexity!</h4>
+                </hgroup>
+            </a>
+        </article>
+
+    </div>
+</section>
+
+
+<section>
+<h5>Pool</h5>
+<div class="code" ace-mode="ace/mode/java">
+// create new hologram pool
+HologramPool _pool = new HologramPool(plugin, 70);
+
+// compose an interactive hologram pool
+// this allows me to hear clicks towards text lines.
+InteractiveHologramPool pool = new InteractiveHologramPool(_pool, 0.5f, 5f);
+</div>
+</section>
+
+
+
+
+
+<section id="(Pool &) Hologram Builder">
+<h5>Hologram(Builder)</h5>
+<p>
+Using the builder you can easily create basic holograms in a single line of code.
+The builder will take care of creating the hologram, loading it and adding it to the pool.
+You can check the {@link HologramBuilder} class for more information.
+<br>
+If you don't want to add it to the pool just call build and not loadAndBuild!
+</p>
+<div class="code" ace-mode="ace/mode/java">
+Hologram.builder(plugin, loc)                                                  // initialize the builder
+    .addTextLine("Hello")                                                      // add a text line
+    .addTextLine("%%player%%")                                                 // add another text line
+    .addClickableTextLine("Click me", 0.5f, 5f)                                 // add a clickable text line
+    .addItemLine(new ItemStack(Material.GOLD_BLOCK))                           // add an item line
+    .addItemLine(new ItemStack(Material.DIAMOND_BLOCK), AnimationType.CIRCLE)  // add an item line with animation
+    .placeholders(placeholders)                                                // add placeholders
+    .loadAndBuild(pool);                                                       // load and build the hologram
+</div>
+</section>
+
+
+
+<section id="Pool & Holograms & Lines">
+<h5>Pool & Holograms & Lines.</h5>
+<p>
+Creating lines, holograms and assigning them to pools makes it easy to manage,
+as holograms will be made visible and hidden automatically by the pool.
+Even the management of clicks is manageable only thanks to the pool.
+It is recommended to use the pool where possible.
+</p>
+<div class="code" ace-mode="ace/mode/java">
+// create new line structure (armorstand)
+Line line = new Line(plugin);
+// compose an TextLine hologram
+TextLine textLine = new TextLine(line, "Hello", null, true);
+
+// create new line structure (armorstand)
+Line line2 = new Line(plugin);
+// compose this second TextLine hologram
+TextLine textLine2 = new TextLine(line2, "%%player%%", placeholders, true);
+
+// append to hologram that will make all the hard work for you
+// the TextSequentialLoader loader will load lines(text only) one after the other. It is an experimental function.
+Hologram hologram = new Hologram(plugin, loc, new TextSequentialLoader());
+// remember to call this method or hologram will not be visible
+hologram.load(textLine, textLine2);
+
+// add hologram to pool
+pool.takeCareOf(hologram);
+</div>
+</section>
+
+
+
+
+
+<section id="Hologram & Lines">
+<h5>Hologram & Lines.</h5>
+<p>
+Creating lines and holograms allows you to manage multiple lines easily by assigning a single spawn.
+Even the loader (or how the holograms will be spaced in the spawn) allow you to save many lines of code.
+</p>
+<div class="code" ace-mode="ace/mode/java">
+// create new line structure (armorstand)
+Line line = new Line(plugin);
+// compose an TextLine hologram
+TextLine textLine = new TextLine(line, "Hi %%player%%", placeholders);
+
+// create new line structure (armorstand)
+Line line2 = new Line(plugin);
+// compose this second ItemLine hologram
+ItemLine itemLine = new ItemLine(line2, new ItemStack(Material.GOLD_BLOCK));
+// compose this second ItemAnimatedLine hologram
+ItemALine itemALine = new ItemALine(itemLine, new StandardAnimatedLine(line2));
+
+// append to hologram that will make all the hard work for you
+// the TextItemStandardLoader loader will load lines(text or item) one below the other.
+Hologram hologram = new Hologram(plugin, loc, new TextItemStandardLoader());
+// remember to call this method or hologram will not be visible
+hologram.load(textLine, itemALine);
+
+// show to player
+hologram.show(player);
+
+// start animation
+itemALine.setAnimation(AnimationType.CIRCLE, hologram);
+
+// hide after 30 seconds to player
+Bukkit.getScheduler().runTaskLater(plugin, () -> hologram.hide(player), 20L * 30);
+</div>
+</section>
+
+
+
+
+<section id="Lines">
+<h5>Lines.
+</h5>
+<p>
+If, on the other hand, you want total control over a line of hologram, as for temporary holograms,
+to be visible to certain players it may be convenient to use only the lines without holograms and pools.
+</p>
+<div class="code" ace-mode="ace/mode/java">
+// create new line structure (armorstand)
+Line line = new Line(plugin, loc);
+// compose an TextLine hologram
+TextLine textLine = new TextLine(line, "Hi %%player%%", placeholders);
+// show to player
+textLine.show(player);
+
+// hide after 30 seconds to player
+Bukkit.getScheduler().runTaskLater(plugin, () -> textLine.hide(player), 20L * 30);
+</div>
+</section>
+
+
+<h3>Bonus</h3>
+
+
+<section>
+<h5>Clickable line.
+</h5>
+<p>ClickableTextLine is useful if you need to hear clicks but without using a pool.
+</p>
+<div class="code" ace-mode="ace/mode/java">
+// create new line structure (armorstand)
+Line line = new Line(plugin, loc);
+// compose an TextLine hologram
+TextLine textLine = new TextLine(line, "Click me");
+// compose an experimental ClickableTextLine hologram
+ClickableTextLine clickableTextLine = new ClickableTextLine(textLine, 0.5f, 5f);
+// show to player
+clickableTextLine.show(player);
+
+// hide after 30 seconds to player
+Bukkit.getScheduler().runTaskLater(plugin, () -> clickableTextLine.hide(player), 20L * 30);
+</div>
+</section>
+
+
+
+
+<section>
+<h5>Placeholders</h5>
+<div class="code" ace-mode="ace/mode/java">
+// create placeholders
+Placeholders placeholders = new Placeholders(Placeholders.STRING | Placeholders.PAPI);
+placeholders.add("%%player%%", Player::getName);
+</div>
+</section>
+
+
+
+
+<div id='example' style="height: 100%"></div>
+
+        <script>
+            var highlight = ace.require("ace/ext/static_highlight")
+            function qsa(sel) {
+                return Array.apply(null, document.querySelectorAll(sel));
+            }
+
+            qsa(".code").forEach(function (codeEl) {
+                highlight(codeEl, {
+                    mode: codeEl.getAttribute("ace-mode"),
+                    theme: "ace/theme/one_dark",
+                    /*
+                    firstLineNumber: 1,
+                    showGutter: true,
+                    */
+                    trim: true                
+                }, function (highlighted) {
+                    // FIX AT https://github.com/ajaxorg/ace/issues/4533
+                    codeEl.getElementsByClassName('ace_static_highlight')[0].style['font-size'] = "16px";
+                });
+            });
+
+    
+        </script>
+        
+    </body>
+    
 </html>
