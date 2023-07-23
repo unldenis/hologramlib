@@ -75,7 +75,7 @@
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.unldenis&lt;/groupId&gt;
     &lt;artifactId&gt;Hologram-Lib&lt;/artifactId&gt;
-    &lt;version&gt;2.5.0&lt;/version&gt;
+    &lt;version&gt;2.6.0&lt;/version&gt;
 &lt;/dependency&gt;
     </div>
 </details>
@@ -94,7 +94,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.unldenis:Hologram-Lib:master-SNAPSHOT'
+    implementation 'com.github.unldenis:Hologram-Lib:2.6.0'
 }
 
     </div>
@@ -126,8 +126,9 @@ To be integrated into a Hologram composed of multiple lines you need to implemen
             <tr><th scope="row">TextLine</th><td></td><td>✅</td><td>✅(w/ Pool)</td></tr>
             <tr><th scope="row">TextALine</th><td>✅</td><td>✅</td><td></td></tr>
             <tr><th scope="row">ClickableTextLine</th><td></td><td>✅</td><td>✅</td></tr>
-            <tr><th scope="row">ItemLine</th><td></td><td>✅</td><td></td></tr>
-            <tr><th scope="row">ItemALine</th><td>✅</td><td>✅</td><td></td></tr>
+            <tr><th scope="row">BlockLine</th><td></td><td>✅</td><td></td></tr>
+            <tr><th scope="row">BlockALine</th><td>✅</td><td>✅</td><td></td></tr>
+            <tr><th scope="row">BlockLine</th><td></td><td>✅</td><td></td></tr>
     </tbody>
 </table></figure>
 </div>
@@ -235,8 +236,8 @@ Hologram.builder(plugin, loc)                                                  /
     .addTextLine("Hello")                                                      // add a text line
     .addTextLine("%%player%%")                                                 // add another text line
     .addClickableTextLine("Click me", 0.5f, 5f)                                 // add a clickable text line
-    .addItemLine(new ItemStack(Material.GOLD_BLOCK))                           // add an item line
-    .addItemLine(new ItemStack(Material.DIAMOND_BLOCK), AnimationType.CIRCLE)  // add an item line with animation
+    .addBlockLine(new ItemStack(Material.GOLD_BLOCK))                           // add a block line
+    .addBlockLine(new ItemStack(Material.DIAMOND_BLOCK), AnimationType.CIRCLE)  // add a block line with animation
     .placeholders(placeholders)                                                // add placeholders
     .loadAndBuild(pool);                                                       // load and build the hologram
 </div>
@@ -292,22 +293,22 @@ TextLine textLine = new TextLine(line, "Hi %%player%%", placeholders);
 
 // create new line structure (armorstand)
 Line line2 = new Line(plugin);
-// compose this second ItemLine hologram
-ItemLine itemLine = new ItemLine(line2, new ItemStack(Material.GOLD_BLOCK));
-// compose this second ItemAnimatedLine hologram
-ItemALine itemALine = new ItemALine(itemLine, new StandardAnimatedLine(line2));
+// compose this second BlockLine hologram
+BlockLine BlockLine = new BlockLine(line2, new ItemStack(Material.GOLD_BLOCK));
+// compose this second BlockAnimatedLine hologram
+BlockALine BlockALine = new BlockALine(BlockLine, new StandardAnimatedLine(line2));
 
 // append to hologram that will make all the hard work for you
-// the TextItemStandardLoader loader will load lines(text or item) one below the other.
-Hologram hologram = new Hologram(plugin, loc, new TextItemStandardLoader());
+// the TextBlockStandardLoader loader will load lines(text or block) one below the other.
+Hologram hologram = new Hologram(plugin, loc, new TextBlockStandardLoader());
 // remember to call this method or hologram will not be visible
-hologram.load(textLine, itemALine);
+hologram.load(textLine, BlockALine);
 
 // show to player
 hologram.show(player);
 
 // start animation
-itemALine.setAnimation(AnimationType.CIRCLE, hologram);
+BlockALine.setAnimation(AnimationType.CIRCLE, hologram);
 
 // hide after 30 seconds to player
 Bukkit.getScheduler().runTaskLater(plugin, () -> hologram.hide(player), 20L * 30);
@@ -370,6 +371,27 @@ Bukkit.getScheduler().runTaskLater(plugin, () -> clickableTextLine.hide(player),
 // create placeholders
 Placeholders placeholders = new Placeholders(Placeholders.STRING | Placeholders.PAPI);
 placeholders.add("%%player%%", Player::getName);
+</div>
+</section>
+
+
+<section>
+<h5>ItemLine (since 2.6.0)</h5>
+<p>
+New experimental ItemLine allows you to add items such as torch, diamond, and so on.
+ItemLine in holograms is not yet integrated into the standard loader, you will need SingletonLoader if you use Holograms, and it must be the only line
+ItemLine also allows you to set a 'handRotation', i.e. the rotation of the arm of the armorstand that holds the item.
+</p>
+<div class="code" ace-mode="ace/mode/java">
+Hologram hologram = Hologram.builder(plugin, loc) // initialize the builder
+    .addItemLine(new ItemStack(Material.TORCH), EulerAngle.ZERO)                // add experimental item line
+    .loader(new SingletonLoader())                                              // a hologram loader with 1 line
+    .name("Since v2.6.0")                                                       // just a name
+    .loadAndBuild(pool);    
+
+
+ItemLine line = (ItemLine) hologram.getLines().get(0);
+line.setHandRotation(new EulerAngle(Math.toRadians(270), 0, 0), hologram.getSeeingPlayers());
 </div>
 </section>
 
